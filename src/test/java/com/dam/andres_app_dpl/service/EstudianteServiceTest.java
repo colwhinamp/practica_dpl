@@ -29,7 +29,7 @@ public class EstudianteServiceTest {
     void setUp() {
         estudiante = new Estudiante();
         estudiante.setId(1L);
-        estudiante.setNombre("fallo ");
+        estudiante.setNombre("Juan Perez");
         estudiante.setEmail("juan@ejemplo.com");
         estudiante.setEdad(20);
     }
