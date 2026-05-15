@@ -2,7 +2,9 @@ package com.dam.andres_app_dpl.controller;
 
 import com.dam.andres_app_dpl.model.Estudiante;
 import com.dam.andres_app_dpl.service.EstudianteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,19 +13,40 @@ import java.util.List;
 @RequestMapping("/api/estudiantes")
 public class EstudianteController {
 
-    // Inyección de Dependencias para traer el Service
     @Autowired
     private EstudianteService service;
 
-    // Endpoint para guardar (POST: http://localhost:8080/api/estudiantes)
     @PostMapping
-    public Estudiante crear(@RequestBody Estudiante estudiante) {
+    public Estudiante crear(@Valid @RequestBody Estudiante estudiante) {
         return service.guardarEstudiante(estudiante);
     }
 
-    // Endpoint para listar (GET: http://localhost:8080/api/estudiantes)
     @GetMapping
     public List<Estudiante> listarTodos() {
         return service.obtenerTodos();
+    }
+
+    // Endpoint para actualizar (PUT)
+    @PutMapping("/{id}")
+    public ResponseEntity<Estudiante> actualizar(@PathVariable Long id, @Valid @RequestBody Estudiante datos) {
+        return service.obtenerPorId(id)
+                .map(estudianteExistente -> {
+                    estudianteExistente.setNombre(datos.getNombre());
+                    estudianteExistente.setEmail(datos.getEmail());
+                    estudianteExistente.setEdad(datos.getEdad());
+                    return ResponseEntity.ok(service.guardarEstudiante(estudianteExistente));
+                })
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+    }
+
+    // Endpoint para borrar (DELETE)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        return service.obtenerPorId(id)
+                .map(estudiante -> {
+                    service.eliminarEstudiante(id);
+                    return ResponseEntity.ok().<Void>build();
+                })
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
     }
 }
