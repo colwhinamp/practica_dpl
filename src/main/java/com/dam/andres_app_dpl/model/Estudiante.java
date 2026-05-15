@@ -1,6 +1,7 @@
 package com.dam.andres_app_dpl.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "estudiantes")
@@ -10,8 +11,13 @@ public class Estudiante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
+    @Email(message = "El email debe ser válido")
     private String email;
+
+    @Min(value = 18, message = "Debe ser mayor de edad")
     private int edad;
 
     // Constructor vacío requerido por JPA
